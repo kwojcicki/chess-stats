@@ -1,0 +1,4 @@
+berserk
+requests
+beautifulsoup4
+matplotlib
