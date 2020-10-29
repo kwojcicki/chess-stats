@@ -21,12 +21,6 @@ def get_data(games):
         game_results = client.games.export_multi(*games, evals="true", moves="true")
 
         for game_result in game_results:
-            # print(game_result)
-            # print(json.dumps(game_result, indent=4, sort_keys=True, default=str))
-            # print(game_result["players"]["black"]["analysis"])
-            # avg_elo = (game_result["players"]["black"]["rating"] + game_result["players"]["white"]["rating"])/2
-            # print(avg_elo)
-            # buckets[int(avg_elo / bucket_size)].append(game_result["players"]["black"]["analysis"]['blunder'])
             if "aiLevel" not in game_result["players"]["black"]:
                 buckets[int(game_result["players"]["black"]["rating"] / bucket_size)].\
                     append(game_result["players"]["black"]["analysis"])
@@ -38,7 +32,6 @@ def get_data(games):
 
 def main():
     ids = glob.glob('[0-9]*-[0-9]*-[0-9]*.txt')
-    # ids = glob.glob('600-700-100.txt')
     for file in ids:
         with open(file) as json_file:
             print(file)

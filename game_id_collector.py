@@ -6,19 +6,17 @@ import getopt
 import time
 
 
-def get_games(low: int, high: int, page: int):
+def get_games(low: int, high: int, page: int, game_type: int):
     url = 'https://lichess.org/games/search?ratingMin=' + str(low) + '&ratingMax=' + str(high) + \
-          '&sort.field=d&sort.order=desc&perf=2&analysed=1#results'
+          '&sort.field=d&sort.order=desc&perf=' + str(game_type) + '&analysed=1#results'
 
     if page > 0:
         url = 'https://lichess.org/games/search?page=' + str(page) +\
               '&ratingMin=' + str(low) + '&ratingMax=' + str(high) + \
-              '&sort.field=d&sort.order=desc&perf=2&analysed=1'
+              '&sort.field=d&sort.order=desc&perf=' + str(game_type) + '&analysed=1'
 
     html_text = requests.get(url).text
-    # print(html_text)
     soup = BeautifulSoup(html_text, 'html.parser')
-    # print(soup)
 
     games = soup.findAll("a", {"class": "game-row__overlay"})
 
@@ -36,10 +34,10 @@ def main(argv):
     low = 600
     high = 2900
     games = 30
+    game_type = 2
     try:
-        opts, args = getopt.getopt(argv, "l:h:n:")
+        opts, args = getopt.getopt(argv, "l:h:n:t:")
     except getopt.GetoptError:
-        # print 'test.py -i <inputfile> -o <outputfile>'
         sys.exit(2)
     for opt, arg in opts:
         if opt in "-l":
@@ -48,18 +46,20 @@ def main(argv):
             high = arg
         elif opt in "-n":
             games = int(arg)
+        elif opt in "-t":
+            game_type = int(arg)
 
     print(low, high, games)
 
     curr = int(low)
-    while curr < high:
-        print("Getting", games, "games between the ranking of", curr, "to", curr + 100)
+    while curr < int(high):
+        print("Getting", games, "games between the ranking of", curr, "to", curr + 100, "for the game type", game_type)
 
         game_ids = []
         page = 0
         while len(game_ids) < games:
             print("Getting page", page)
-            for game in get_games(curr, curr + 100, page):
+            for game in get_games(curr, curr + 100, page, game_type):
                 game_ids.append(game)
             page += 1
 
